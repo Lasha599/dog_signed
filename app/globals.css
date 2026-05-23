@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Inter', -apple-system, sans-serif;
+}
+
+html, body {
+  background: #F5EFE4;
+  color: #1A1A1A;
+  font-family: var(--font-body);
+}
+
+.font-display { font-family: var(--font-display); }
+
+/* subtle grain texture overlay */
+.grain {
+  position: relative;
+}
+.grain::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.btn-primary {
+  @apply bg-clay text-cream px-6 py-3 rounded-full font-medium tracking-wide transition-all hover:bg-clayDark active:scale-95;
+}
+.btn-secondary {
+  @apply bg-transparent text-ink border border-ink/20 px-6 py-3 rounded-full font-medium tracking-wide transition-all hover:bg-ink/5 active:scale-95;
+}
+.btn-ghost {
+  @apply text-ink/70 px-4 py-2 rounded-full transition-all hover:bg-ink/5;
+}
+
+.input {
+  @apply w-full px-4 py-3 rounded-lg border border-ink/15 bg-white/50 focus:outline-none focus:border-clay focus:ring-1 focus:ring-clay/30 transition;
+}
+
+.card {
+  @apply bg-white/70 backdrop-blur border border-ink/10 rounded-2xl p-6 shadow-sm;
+}
+
+.chip {
+  @apply inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-sand text-forest;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.6s ease-out both; }
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
