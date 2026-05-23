@@ -1,21 +1,18 @@
-// MongoDB document shapes. Each collection has its own type.
-// IDs are strings (we generate our own) for stable client-side keys.
-
 import { ObjectId } from 'mongodb';
 
 export type UserDoc = {
   _id?: ObjectId;
-  id: string;              // public id, used in JWTs and URLs
+  id: string;
   name: string;
-  email: string;           // lowercase, indexed unique
-  passwordHash: string;    // bcrypt
+  email: string;
+  passwordHash: string;
   createdAt: Date;
 };
 
 export type DogDoc = {
   _id?: ObjectId;
   id: string;
-  userId: string;          // references UserDoc.id
+  userId: string;
   name: string;
   breed: string;
   ageYears: number;
@@ -47,12 +44,7 @@ export type OrderDoc = {
   deliveredAt: string;
 };
 
-// What we send to the client — never includes passwordHash or _id.
-export type SafeUser = {
-  id: string;
-  name: string;
-  email: string;
-};
+export type SafeUser = { id: string; name: string; email: string };
 
 export function toSafeUser(u: UserDoc): SafeUser {
   return { id: u.id, name: u.name, email: u.email };

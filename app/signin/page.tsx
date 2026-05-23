@@ -27,23 +27,23 @@ export default function SignInPage() {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">Email</label>
-            <input
-              className="input" type="email" value={email}
+            <input className="input" type="email" value={email}
               onChange={e => setEmail(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && submit()}
-              placeholder="anna@example.com"
-            />
+              placeholder="anna@example.com" />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1">Password</label>
-            <input
-              className="input" type="password" value={password}
+            <input className="input" type="password" value={password}
               onChange={e => setPassword(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && submit()}
-              placeholder="••••••••"
-            />
+              placeholder="••••••••" />
           </div>
-          {error && <div className="text-clay text-sm">{error}</div>}
+          {error && (
+            <div className="text-clay text-sm p-3 bg-clay/10 rounded-lg whitespace-pre-wrap break-words">
+              {error}
+            </div>
+          )}
           <button onClick={submit} disabled={busy} className="btn-primary w-full mt-2 disabled:opacity-50">
             {busy ? 'Signing in…' : 'Sign in'}
           </button>

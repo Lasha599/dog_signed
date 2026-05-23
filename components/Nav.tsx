@@ -21,10 +21,7 @@ export default function Nav() {
             <>
               <Link href="/dashboard" className="btn-primary text-sm">Dashboard</Link>
               <button
-                onClick={async () => {
-                  await signOut();
-                  router.push('/');
-                }}
+                onClick={async () => { await signOut(); router.push('/'); }}
                 className="btn-ghost text-xs text-muted"
               >
                 Sign out
@@ -32,9 +29,7 @@ export default function Nav() {
             </>
           ) : (
             <>
-              {hydrated && (
-                <Link href="/signin" className="btn-ghost text-sm">Sign in</Link>
-              )}
+              {hydrated && <Link href="/signin" className="btn-ghost text-sm">Sign in</Link>}
               <Link href="/register" className="btn-primary text-sm">Get started</Link>
             </>
           )}

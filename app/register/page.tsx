@@ -49,7 +49,11 @@ export default function RegisterPage() {
             <label className="block text-sm font-medium mb-1">Password</label>
             <input className="input" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="At least 8 characters" />
           </div>
-          {shown && <div className="text-clay text-sm">{shown}</div>}
+          {shown && (
+            <div className="text-clay text-sm p-3 bg-clay/10 rounded-lg whitespace-pre-wrap break-words">
+              {shown}
+            </div>
+          )}
           <button onClick={submit} disabled={busy} className="btn-primary w-full mt-2 disabled:opacity-50">
             {busy ? 'Creating account…' : 'Continue'}
           </button>

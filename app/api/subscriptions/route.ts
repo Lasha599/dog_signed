@@ -10,48 +10,46 @@ const schema = z.object({
 });
 
 export async function POST(req: NextRequest) {
-  const session = await getSession();
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  try {
+    const session = await getSession();
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  let body: unknown;
-  try { body = await req.json(); }
-  catch { return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }); }
+    let body: unknown;
+    try { body = await req.json(); }
+    catch { return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }); }
 
-  const parsed = schema.safeParse(body);
-  if (!parsed.success) {
-    return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+    const parsed = schema.safeParse(body);
+    if (!parsed.success) return NextResponse.json({ error: 'Invalid input' }, { status: 400 });
+
+    const dog = await (await dogs()).findOne({ id: parsed.data.dogId, userId: session.uid });
+    if (!dog) return NextResponse.json({ error: 'Dog not found' }, { status: 404 });
+
+    const next = new Date();
+    next.setDate(next.getDate() + parsed.data.frequencyWeeks * 7);
+
+    const sub = {
+      id: genId('sub'),
+      userId: session.uid,
+      dogId: parsed.data.dogId,
+      productId: parsed.data.productId,
+      frequencyWeeks: parsed.data.frequencyWeeks,
+      nextDeliveryISO: next.toISOString(),
+      status: 'active' as const,
+      createdAt: new Date(),
+    };
+    await (await subscriptions()).insertOne(sub);
+    await (await orders()).insertOne({
+      id: genId('ord'),
+      userId: session.uid,
+      dogId: parsed.data.dogId,
+      productId: parsed.data.productId,
+      deliveredAt: new Date(Date.now() - 86400000 * 3).toISOString(),
+    });
+
+    const { _id, ...safe } = sub as typeof sub & { _id?: unknown };
+    return NextResponse.json({ subscription: safe }, { status: 201 });
+  } catch (e) {
+    console.error('/api/subscriptions failed:', e);
+    return NextResponse.json({ error: 'Server error', detail: (e as Error).message }, { status: 500 });
   }
-
-  // Confirm the dog belongs to this user.
-  const dog = await (await dogs()).findOne({ id: parsed.data.dogId, userId: session.uid });
-  if (!dog) return NextResponse.json({ error: 'Dog not found' }, { status: 404 });
-
-  const now = new Date();
-  const next = new Date(now);
-  next.setDate(next.getDate() + parsed.data.frequencyWeeks * 7);
-
-  const sub = {
-    id: genId('sub'),
-    userId: session.uid,
-    dogId: parsed.data.dogId,
-    productId: parsed.data.productId,
-    frequencyWeeks: parsed.data.frequencyWeeks,
-    nextDeliveryISO: next.toISOString(),
-    status: 'active' as const,
-    createdAt: now,
-  };
-  await (await subscriptions()).insertOne(sub);
-
-  // Seed a fake first delivery for the demo.
-  const seedOrder = {
-    id: genId('ord'),
-    userId: session.uid,
-    dogId: parsed.data.dogId,
-    productId: parsed.data.productId,
-    deliveredAt: new Date(Date.now() - 86400000 * 3).toISOString(),
-  };
-  await (await orders()).insertOne(seedOrder);
-
-  const { _id, ...safe } = sub as typeof sub & { _id?: unknown };
-  return NextResponse.json({ subscription: safe }, { status: 201 });
 }
