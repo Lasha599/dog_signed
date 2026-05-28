@@ -16,10 +16,13 @@ function getClientPromise(): Promise<MongoClient> {
     if (!uri) throw new Error('MONGODB_URI env var is not set');
     global._mongoClientPromise = new MongoClient(uri, {
       serverSelectionTimeoutMS: 10000,
+      tls: true,
+      retryWrites: true,
     }).connect();
   }
   return global._mongoClientPromise;
 }
+
 
 export async function getDb(): Promise<Db> {
   const client = await getClientPromise();
