@@ -49,10 +49,14 @@ export async function orders() {
 let indexesEnsured = false;
 export async function ensureIndexes() {
   if (indexesEnsured) return;
-  indexesEnsured = true;
-  await (await users()).createIndex({ email: 1 }, { unique: true });
-  await (await dogs()).createIndex({ userId: 1 });
-  await (await subscriptions()).createIndex({ userId: 1 });
-  await (await subscriptions()).createIndex({ dogId: 1 });
-  await (await orders()).createIndex({ userId: 1 });
+  try {
+    await (await users()).createIndex({ email: 1 }, { unique: true });
+    await (await dogs()).createIndex({ userId: 1 });
+    await (await subscriptions()).createIndex({ userId: 1 });
+    await (await subscriptions()).createIndex({ dogId: 1 });
+    await (await orders()).createIndex({ userId: 1 });
+    indexesEnsured = true;
+  } catch (e) {
+    console.warn('ensureIndexes warning (continuing):', (e as Error).message);
+  }
 }
